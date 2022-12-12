@@ -1,0 +1,14 @@
+### hello
+GET http://127.0.0.1:11095/
+
+### telnet
+GET http://127.0.0.1:11095/telnet
+
+### telnetme
+GET http://127.0.0.1:11095/telnetme
+
+### update ip
+PUT http://127.0.0.1:11095/ip/127.0.0.1
+
+### call Lightsail change ip
+POST http://127.0.0.1:11095/ip
