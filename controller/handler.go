@@ -3,11 +3,12 @@ package controller
 import (
 	"context"
 	"fmt"
-	"github.com/davidhong1/change-aws-lightsail-ip/config"
 	"net/http"
 	"os/exec"
 	"strings"
 	"time"
+
+	"github.com/davidhong1/change-aws-lightsail-ip/config"
 
 	"github.com/kpango/glg"
 	"github.com/labstack/echo/v4"
@@ -55,6 +56,10 @@ func Telnet(c echo.Context) error {
 	}
 
 	return c.String(http.StatusOK, fmt.Sprintf("use time %fs, %s", retTime, config.Conf.DefaultIP))
+}
+
+func GetIP(c echo.Context) error {
+	return c.String(http.StatusOK, config.Conf.DefaultIP)
 }
 
 func ChangeIP(c echo.Context) error {

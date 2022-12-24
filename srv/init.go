@@ -19,21 +19,25 @@ func InitTelnetJob() {
 		glg.Info("CNDefaultIP is empty, don't init telnet job")
 		return
 	}
-	t := time.NewTicker(time.Second * time.Duration(config.Conf.TelnetMeInterval))
-	defer func() {
-		t.Stop()
-	}()
 
 	go func() {
+		t := time.NewTicker(time.Second * time.Duration(config.Conf.TelnetMeInterval))
+		defer func() {
+			t.Stop()
+		}()
+
 		for {
 			<-t.C
+			glg.Infof("start doTelnetMe %s", config.Conf.CNDefaultIP)
 			ok, err := doTelnetMe()
 			if err != nil {
 				glg.Error(err)
 				callChangeIP()
 			}
-			glg.Infof("doTelnetMe ok: %b", ok)
-			if !ok {
+			if ok {
+				glg.Info("doTelnetMe ok")
+			} else {
+				glg.Info("doTelnetMe !ok")
 				callChangeIP()
 			}
 		}
@@ -59,7 +63,7 @@ func doTelnetMe() (bool, error) {
 	if resp.StatusCode != http.StatusOK {
 		return false, nil
 	}
-	return true, err
+	return true, nil
 }
 
 func callChangeIP() error {
