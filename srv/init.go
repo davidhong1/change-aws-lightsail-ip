@@ -86,7 +86,7 @@ func callChangeIP() error {
 	resp, err := http.DefaultClient.Do(req)
 	if err != nil {
 		glg.Error(err)
-		return err
+		// don't return, try to restart
 	}
 	glg.Debug(resp)
 
