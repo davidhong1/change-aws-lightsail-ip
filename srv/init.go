@@ -2,6 +2,7 @@ package srv
 
 import (
 	"fmt"
+	"io/ioutil"
 	"net/http"
 	"time"
 
@@ -90,6 +91,11 @@ func callChangeIP() error {
 	} else {
 		glg.Debug(resp)
 	}
+	defer func() {
+		if resp != nil && resp.Body != nil {
+			resp.Body.Close()
+		}
+	}()
 
 	// 2. restart lightsail
 	// get instance localIPv4
@@ -99,13 +105,12 @@ func callChangeIP() error {
 		return err
 	}
 	glg.Debug(resp)
-	body := make([]byte, 0)
-	_, err = resp.Body.Read(body)
+	s, err := ioutil.ReadAll(resp.Body)
 	if err != nil {
 		glg.Error(err)
 		return err
 	}
-	localIPv4 := string(body)
+	localIPv4 := string(s)
 	glg.Debug(localIPv4)
 
 	// self reboot
