@@ -91,8 +91,8 @@ func callChangeIP() error {
 	glg.Debug(resp)
 
 	// 2. restart lightsail
-	// get instance id
-	resp, err = http.DefaultClient.Get("http://169.254.169.254/latest/meta-data/instance-id")
+	// get instance localIPv4
+	resp, err = http.DefaultClient.Get("http://169.254.169.254/latest/meta-data/local-ipv4")
 	if err != nil {
 		glg.Error(err)
 		return err
@@ -104,16 +104,36 @@ func callChangeIP() error {
 		glg.Error(err)
 		return err
 	}
-	instanceID := string(body)
+	localIPv4 := string(body)
+
 	// self reboot
 	sess, err := newAwsSess()
 	if err != nil {
 		glg.Error(err)
 		return err
 	}
+	// list Lightsail instance to found instanceName which match localIPv4
+	instances, err := listLightsailInstance(sess)
+	if err != nil {
+		glg.Error(err)
+		return err
+	}
+	var instanceName string
+	for _, instance := range instances {
+		if *instance.PrivateIpAddress == localIPv4 {
+			instanceName = *instance.Name
+			break
+		}
+	}
+	if instanceName == "" {
+		err = fmt.Errorf("instanceName is empty")
+		glg.Error(err)
+		return err
+	}
+
 	lightsailClient := lightsail.New(sess)
 	rebootInstanceOutput, err := lightsailClient.RebootInstance(&lightsail.RebootInstanceInput{
-		InstanceName: aws.String(instanceID),
+		InstanceName: aws.String(instanceName),
 	})
 	if err != nil {
 		glg.Error(err)
@@ -122,6 +142,34 @@ func callChangeIP() error {
 	glg.Info(rebootInstanceOutput)
 
 	return nil
+}
+
+func listLightsailInstance(sess *session.Session) ([]*lightsail.Instance, error) {
+	lightsailClient := lightsail.New(sess)
+
+	var err error
+	var nextToken *string
+	var resp *lightsail.GetInstancesOutput
+	var out []*lightsail.Instance
+	for {
+		if nextToken == nil {
+			resp, err = lightsailClient.GetInstances(&lightsail.GetInstancesInput{})
+		} else {
+			resp, err = lightsailClient.GetInstances(&lightsail.GetInstancesInput{
+				PageToken: nextToken,
+			})
+		}
+		if err != nil {
+			return nil, err
+		}
+		out = append(out, resp.Instances...)
+		if resp.NextPageToken == nil {
+			break
+		}
+		nextToken = resp.NextPageToken
+	}
+
+	return out, nil
 }
 
 func newAwsSess() (*session.Session, error) {
