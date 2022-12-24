@@ -1,6 +1,10 @@
 package config
 
-import "github.com/kpango/glg"
+import (
+	"github.com/cristalhq/aconfig"
+	"github.com/cristalhq/aconfig/aconfigyaml"
+	"github.com/kpango/glg"
+)
 
 var (
 	Conf Config
@@ -26,4 +30,21 @@ func (c Config) Print() {
 	glg.Info("AwsDefaultRegion", c.AwsDefaultRegion)
 	glg.Info("TelnetMeInterval", c.TelnetMeInterval)
 	glg.Info("CNDefaultIP", c.CNDefaultIP)
+}
+
+func Init(configFilePath string) {
+	loader := aconfig.LoaderFor(&Conf, aconfig.Config{
+		SkipEnv:   true,
+		SkipFlags: true,
+		Files:     []string{configFilePath},
+		FileDecoders: map[string]aconfig.FileDecoder{
+			".yaml": aconfigyaml.New(),
+			".yml":  aconfigyaml.New(),
+		},
+	})
+	if err := loader.Load(); err != nil {
+		glg.Fatalln(err)
+		return
+	}
+	Conf.Print()
 }

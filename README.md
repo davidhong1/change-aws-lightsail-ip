@@ -32,4 +32,8 @@ RestartPreventExitStatus=23
 WantedBy=multi-user.target
 
 EOF
+
+systemctl start change-aws-lightsail-ip
+systemctl enable change-aws-lightsail-ip
+systemctl status change-aws-lightsail-ip
 ```
