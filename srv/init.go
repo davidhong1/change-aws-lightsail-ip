@@ -87,8 +87,9 @@ func callChangeIP() error {
 	if err != nil {
 		glg.Error(err)
 		// don't return, try to restart
+	} else {
+		glg.Debug(resp)
 	}
-	glg.Debug(resp)
 
 	// 2. restart lightsail
 	// get instance localIPv4
@@ -105,6 +106,7 @@ func callChangeIP() error {
 		return err
 	}
 	localIPv4 := string(body)
+	glg.Debug(localIPv4)
 
 	// self reboot
 	sess, err := newAwsSess()
