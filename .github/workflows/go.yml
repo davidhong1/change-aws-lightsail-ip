@@ -1,7 +1,7 @@
 name: release
 
 env:
-  RELEASE_VERSION: alpha-0.1 // TODO
+  RELEASE_VERSION: alpha-v0.1
 
 on:
   push:
