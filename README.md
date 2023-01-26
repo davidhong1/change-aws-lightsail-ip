@@ -7,7 +7,7 @@ Change aws lightsail ip when ip can't telnet in CN.
 ```shell
 mkdir /etc/change-aws-lightsail-ip
 
-wget https://github.com/davidhong1/change-aws-lightsail-ip/releases/download/alpha-v0.1/change-aws-lightsail-ip -O /etc/change-aws-lightsail-ip/change-aws-lightsail-ip && chmod +x /etc/change-aws-lightsail-ip/change-aws-lightsail-ip
+wget https://github.com/davidhong1/change-aws-lightsail-ip/releases/download/alpha-v0.2/change-aws-lightsail-ip -O /etc/change-aws-lightsail-ip/change-aws-lightsail-ip && chmod +x /etc/change-aws-lightsail-ip/change-aws-lightsail-ip
 
 cat > /etc/change-aws-lightsail-ip/config.yaml << EOF
 aws_default_region: "ap-northeast-1" # change as you need
