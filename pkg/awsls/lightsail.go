@@ -13,7 +13,7 @@ import (
 func StopInstance(ctx context.Context, sess *session.Session, instanceName *string) error {
 	lightsailClient := lightsail.New(sess)
 
-	output, err := lightsailClient.StopInstance(&lightsail.StopInstanceInput{
+	_, err := lightsailClient.StopInstance(&lightsail.StopInstanceInput{
 		Force:        aws.Bool(true),
 		InstanceName: instanceName,
 	})
@@ -21,7 +21,6 @@ func StopInstance(ctx context.Context, sess *session.Session, instanceName *stri
 		glg.Error(err)
 		return nil
 	}
-	glg.Info(output.Operations)
 
 	return nil
 }
@@ -29,14 +28,13 @@ func StopInstance(ctx context.Context, sess *session.Session, instanceName *stri
 func StartInstance(ctx context.Context, sess *session.Session, instanceName *string) error {
 	lightsailClient := lightsail.New(sess)
 
-	output, err := lightsailClient.StartInstance(&lightsail.StartInstanceInput{
+	_, err := lightsailClient.StartInstance(&lightsail.StartInstanceInput{
 		InstanceName: instanceName,
 	})
 	if err != nil {
 		glg.Error(err)
 		return nil
 	}
-	glg.Info(output.Operations)
 
 	return nil
 }

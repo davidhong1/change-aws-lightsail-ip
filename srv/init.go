@@ -45,8 +45,7 @@ func doTelnet(ctx context.Context) error {
 	glg.Infof("telnet %d instance", len(instances))
 
 	for _, instance := range instances {
-		glg.Debug(instance.State)
-		if *instance.IsStaticIp && *instance.State.Name == "stopped" {
+		if *instance.State.Name == "stopped" {
 			// filter stopped instance
 			err = startInstance(ctx, *instance.Name)
 			if err != nil {
@@ -55,13 +54,13 @@ func doTelnet(ctx context.Context) error {
 			continue
 		}
 
+		if instance.PublicIpAddress == nil {
+			continue
+		}
+
 		now := time.Now()
 		defer func() {
-			publicIP := ""
-			if instance.PublicIpAddress == nil {
-				publicIP = *instance.PublicIpAddress
-			}
-			glg.Info("telnet %s %s use time %f", *instance.Name, publicIP, time.Since(now).Seconds())
+			glg.Infof("telnet %s %s use time %f", *instance.Name, *instance.PublicIpAddress, time.Since(now).Seconds())
 		}()
 
 		_, err := telnet.Telnet(ctx, *instance.PublicIpAddress, config.Conf.DefaultPort)
