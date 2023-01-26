@@ -1,6 +1,8 @@
 package iplist
 
-import "sync"
+import (
+	"sync"
+)
 
 var (
 	ipList []string
@@ -35,10 +37,10 @@ func Remove(ip string) {
 	if len(ipList) > 0 {
 		newLen = len(ipList) - 1
 	}
-	newList := make([]string, newLen)
+	newList := make([]string, 0, newLen)
 	for _, v := range ipList {
 		if v != ip {
-			newList = append(newList, ip)
+			newList = append(newList, v)
 		}
 	}
 	ipList = newList

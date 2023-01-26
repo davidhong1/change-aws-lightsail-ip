@@ -13,7 +13,6 @@ import (
 )
 
 func InitTelnetJob() {
-
 	go func() {
 		t := time.NewTicker(time.Second * time.Duration(config.Conf.TelnetInterval))
 		defer func() {
@@ -46,9 +45,23 @@ func doTelnet(ctx context.Context) error {
 	glg.Infof("telnet %d instance", len(instances))
 
 	for _, instance := range instances {
+		glg.Debug(instance.State)
+		if *instance.IsStaticIp && *instance.State.Name == "stopped" {
+			// filter stopped instance
+			err = startInstance(ctx, *instance.Name)
+			if err != nil {
+				glg.Error(err)
+			}
+			continue
+		}
+
 		now := time.Now()
 		defer func() {
-			glg.Info("telnet %s %s use time %f", *instance.Name, *instance.PublicIpAddress, time.Since(now).Seconds())
+			publicIP := ""
+			if instance.PublicIpAddress == nil {
+				publicIP = *instance.PublicIpAddress
+			}
+			glg.Info("telnet %s %s use time %f", *instance.Name, publicIP, time.Since(now).Seconds())
 		}()
 
 		_, err := telnet.Telnet(ctx, *instance.PublicIpAddress, config.Conf.DefaultPort)
@@ -71,6 +84,24 @@ func doTelnet(ctx context.Context) error {
 }
 
 func stopAndStartInstance(ctx context.Context, instanceName string) error {
+	err := stopInstance(ctx, instanceName)
+	if err != nil {
+		glg.Error(err)
+		return err
+	}
+
+	time.Sleep(3 * time.Minute)
+
+	err = startInstance(ctx, instanceName)
+	if err != nil {
+		glg.Error(err)
+		return err
+	}
+
+	return nil
+}
+
+func stopInstance(ctx context.Context, instanceName string) error {
 	sess, err := awsls.NewAwsSess(config.Conf.AwsDefaultRegion, config.Conf.AccessKeyID, config.Conf.AccessSecret)
 	if err != nil {
 		glg.Error(err)
@@ -80,10 +111,11 @@ func stopAndStartInstance(ctx context.Context, instanceName string) error {
 	if err != nil {
 		glg.Error(err)
 	}
+	return nil
+}
 
-	time.Sleep(3 * time.Minute)
-
-	sess, err = awsls.NewAwsSess(config.Conf.AwsDefaultRegion, config.Conf.AccessKeyID, config.Conf.AccessSecret)
+func startInstance(ctx context.Context, instanceName string) error {
+	sess, err := awsls.NewAwsSess(config.Conf.AwsDefaultRegion, config.Conf.AccessKeyID, config.Conf.AccessSecret)
 	if err != nil {
 		glg.Error(err)
 		return err
