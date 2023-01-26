@@ -13,6 +13,7 @@ import (
 )
 
 func InitTelnetJob() {
+
 	go func() {
 		t := time.NewTicker(time.Second * time.Duration(config.Conf.TelnetInterval))
 		defer func() {
@@ -21,7 +22,7 @@ func InitTelnetJob() {
 
 		for {
 			<-t.C
-			err := doTelnet()
+			err := doTelnet(context.Background())
 			if err != nil {
 				glg.Error(err)
 			}
@@ -29,9 +30,7 @@ func InitTelnetJob() {
 	}()
 }
 
-func doTelnet() error {
-	ctx := context.Background()
-
+func doTelnet(ctx context.Context) error {
 	sess, err := awsls.NewAwsSess(config.Conf.AwsDefaultRegion, config.Conf.AccessKeyID, config.Conf.AccessSecret)
 	if err != nil {
 		glg.Error(err)
@@ -43,6 +42,9 @@ func doTelnet() error {
 		glg.Error(err)
 		return err
 	}
+
+	glg.Infof("telnet %d instance", len(instances))
+
 	for _, instance := range instances {
 		now := time.Now()
 		defer func() {
