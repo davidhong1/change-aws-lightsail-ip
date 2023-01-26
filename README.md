@@ -13,7 +13,7 @@ cat > /etc/change-aws-lightsail-ip/config.yaml << EOF
 aws_default_region: "ap-northeast-1" # change as you need
 access_key_id: "" # change
 access_secret: "" # change
-cn_default_ip: "" # change
+default_port: 10310 # change
 
 EOF
 

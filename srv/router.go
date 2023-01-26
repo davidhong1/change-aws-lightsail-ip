@@ -20,12 +20,8 @@ func Router() {
 	g := e.Group("/v1/changeawslightsailipsrv")
 	{
 		g.GET("/", controller.Hello)
-		g.GET("/telnet", controller.Telnet)
+		g.GET("/telnet/:ip", controller.Telnet)
 		g.GET("/ip", controller.GetIP)
-		g.POST("/ip", controller.ChangeIP)
-		g.DELETE("/ip", controller.RestIP)
-		g.PUT("/ip/:ip", controller.UpdateIP)
-		g.GET("/telnetme", controller.TelnetMe)
 	}
 
 	// Start server
