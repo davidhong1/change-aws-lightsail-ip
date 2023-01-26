@@ -77,10 +77,9 @@ func stopAndStartInstance(ctx context.Context, instanceName string) error {
 	err = awsls.StopInstance(ctx, sess, &instanceName)
 	if err != nil {
 		glg.Error(err)
-		return err
 	}
 
-	time.Sleep(2 * time.Minute)
+	time.Sleep(3 * time.Minute)
 
 	sess, err = awsls.NewAwsSess(config.Conf.AwsDefaultRegion, config.Conf.AccessKeyID, config.Conf.AccessSecret)
 	if err != nil {

@@ -31,5 +31,8 @@ func GetIP(c echo.Context) error {
 	for _, v := range iplist.Get() {
 		ret = ret + v + "\n"
 	}
+	if ret == "" {
+		ret = "please try again in 5 minutes"
+	}
 	return c.String(http.StatusOK, ret)
 }
