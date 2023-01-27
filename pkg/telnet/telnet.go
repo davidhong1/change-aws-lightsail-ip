@@ -16,8 +16,9 @@ func Telnet(ctx context.Context, host string, port int) (retTime float64, err er
 	now := time.Now()
 	defer func() {
 		retTime = time.Since(now).Seconds()
+		glg.Infof("telnet %s:%s use time %f", host, strconv.Itoa(port), retTime)
 		if err != nil {
-			glg.Error(err)
+			glg.Errorf("telnet %s:%s err: %v", host, strconv.Itoa(port), err)
 		}
 	}()
 
@@ -31,11 +32,13 @@ func Telnet(ctx context.Context, host string, port int) (retTime float64, err er
 		return
 	}
 
-	if !strings.Contains(string(out), "Escape character") {
-		err = fmt.Errorf("telnet output not contains Escape character")
+	glg.Infof("telnet %s:%s output: %s", host, strconv.Itoa(port), string(out))
+	if strings.Contains(string(out), "Escape character") {
+		err = nil
+		// contain Escape character is ok, return
 		return
 	}
-	glg.Info("Output: %s", string(out))
+
 	if err != nil {
 		err = errors.Wrapf(err, "non-zero exit code")
 		return

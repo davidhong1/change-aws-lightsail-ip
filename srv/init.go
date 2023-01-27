@@ -54,7 +54,7 @@ func doTelnet(ctx context.Context) error {
 			continue
 		}
 
-		if instance.PublicIpAddress == nil {
+		if instance.PublicIpAddress == nil || *instance.State.Name != "running" {
 			continue
 		}
 
