@@ -18,7 +18,7 @@ func Hello(c echo.Context) error {
 func Telnet(c echo.Context) error {
 	ip := c.Param("ip")
 
-	retTime, err := telnet.Telnet(c.Request().Context(), ip, config.Conf.DefaultPort)
+	retTime, err := telnet.TelnetWithRetry(c.Request().Context(), ip, config.Conf.DefaultPort, config.Conf.TelnetRetryTime)
 	if err != nil {
 		return c.String(http.StatusOK, "err: "+err.Error())
 	}

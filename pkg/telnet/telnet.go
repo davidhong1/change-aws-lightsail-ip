@@ -9,7 +9,6 @@ import (
 	"time"
 
 	"github.com/kpango/glg"
-	"github.com/pkg/errors"
 )
 
 func Telnet(ctx context.Context, host string, port int) (retTime float64, err error) {
@@ -39,10 +38,18 @@ func Telnet(ctx context.Context, host string, port int) (retTime float64, err er
 		return
 	}
 
-	if err != nil {
-		err = errors.Wrapf(err, "non-zero exit code")
-		return
+	return
+}
+
+func TelnetWithRetry(ctx context.Context, host string, port, retryTime int) (float64, error) {
+	for i := 0; i < retryTime; i++ {
+		retTime, err := Telnet(ctx, host, port)
+		if err != nil {
+			continue
+		}
+
+		return retTime, nil
 	}
 
-	return
+	return 0, nil
 }

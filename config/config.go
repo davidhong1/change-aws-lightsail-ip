@@ -14,6 +14,7 @@ type Config struct {
 	ListenPort       string `default:":11095" usage:"e.g. :11095" json:"listen_port"`
 	AwsDefaultRegion string `default:"ap-northeast-1" usage:"e.g. ap-northeast-1" json:"aws_default_region"`
 	DefaultPort      int    `default:"10310" json:"default_port"`
+	TelnetRetryTime  int    `default:"3" json:"telnet_retry_time"`
 
 	AccessKeyID  string `json:"access_key_id"`
 	AccessSecret string `json:"access_secret"`
@@ -26,6 +27,7 @@ func (c Config) Print() {
 	glg.Info("ListenPort", c.ListenPort)
 	glg.Info("AwsDefaultRegion", c.AwsDefaultRegion)
 	glg.Info("DefaultPort", c.DefaultPort)
+	glg.Info("TelnetRetryTime", c.TelnetRetryTime)
 	glg.Info("TelnetInterval", c.TelnetInterval)
 }
 

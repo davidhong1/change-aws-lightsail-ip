@@ -63,7 +63,7 @@ func doTelnet(ctx context.Context) error {
 			glg.Infof("telnet %s %s use time %f", *instance.Name, *instance.PublicIpAddress, time.Since(now).Seconds())
 		}()
 
-		_, err := telnet.Telnet(ctx, *instance.PublicIpAddress, config.Conf.DefaultPort)
+		_, err := telnet.TelnetWithRetry(ctx, *instance.PublicIpAddress, config.Conf.DefaultPort, config.Conf.TelnetRetryTime)
 		if err != nil {
 			glg.Error(err)
 
