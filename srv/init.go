@@ -21,10 +21,13 @@ func InitTelnetJob() {
 
 		for {
 			<-t.C
-			err := doTelnet(context.Background())
+			ctx := context.Background()
+			err := doTelnet(ctx)
 			if err != nil {
 				glg.Error(err)
 			}
+
+			removeUnailableIP(ctx)
 		}
 	}()
 }
@@ -125,4 +128,16 @@ func startInstance(ctx context.Context, instanceName string) error {
 		return err
 	}
 	return nil
+}
+
+func removeUnailableIP(ctx context.Context) {
+	for _, v := range iplist.Get() {
+		_, err := telnet.TelnetWithRetry(ctx, v, config.Conf.DefaultPort, config.Conf.TelnetRetryTime)
+		if err != nil {
+			glg.Error(err)
+
+			// remove ip from array
+			iplist.Remove(v)
+		}
+	}
 }
